@@ -34,6 +34,8 @@ exports.read_config = function(){
 
     if(loadedConfig.settings.database.type === 'mongodb'){
         loadedConfig.settings.database.connection_string = process.env.MONGODB_CONNECTION_STRING || loadedConfig.settings.database.connection_string;
+    } else if(loadedConfig.settings.database.type === 'couchbase'){
+        loadedConfig.settings.database.connection_string = process.env.COUCHBASE_CONNECTION_STRING || loadedConfig.settings.database.connection_string;
     }
 
     if(typeof loadedConfig.settings.route_name === 'undefined' || loadedConfig.settings.route_name === ''){

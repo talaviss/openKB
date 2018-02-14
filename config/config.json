@@ -24,7 +24,12 @@
         "app_context": "",
         "links_blank_page": true,
         "database": {
-            "type": "embedded"
+            "type": "couchbase",
+            "bucket_name": "mybucket",
+            "bucket_password": "1234",
+            "username": "Administrator",
+            "password": "Administrator",
+            "connection_string": "couchbase://localhost"
         },
         "allow_voting": true,
         "google_analytics": "",

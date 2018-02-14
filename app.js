@@ -15,8 +15,10 @@ var remove_md = require('remove-markdown');
 var common = require('./routes/common');
 var config = common.read_config();
 var MongoClient = require('mongodb').MongoClient;
+var couchbase = require('couchbase')
 var expstate = require('express-state');
 var compression = require('compression');
+
 
 // require the routes
 var index = require('./routes/index');
@@ -328,7 +330,37 @@ if(config.settings.database.type === 'embedded'){
             app.emit('openKBstarted');
         });
     });
-}else{
+} else if (config.settings.database.type === 'couchbase'){
+
+    var cluster = new couchbase.Cluster(config.settings.database.connection_string);
+    cluster.authenticate(config.settings.database.username, config.settings.database.password);
+    if(!config.settings.database.bucket_name) {
+        console.error('With couchbase must specify bucket name in config json');
+        process.exit();
+    }
+    var bucket = cluster.openBucket(config.settings.database.bucket_name,  function(err) {
+        if (err) {
+            console.error('Got error: %j', err);
+        }
+        bucket.insert('taltest', {'some': 'value'}, function(err, result) {
+            if (!err) {
+                console.log("stored document successfully. CAS is %j", result.cas);
+            } else {
+                console.error("Couldn't store document: %j", err);
+            }
+        });
+    });
+    var N1qlQuery = couchbase.N1qlQuery;
+
+
+
+
+    /*bucket.manager().createPrimaryIndex(function() {
+
+
+    });*/
+
+} else {
     MongoClient.connect(config.settings.database.connection_string, {}, function(err, db){
         // On connection error we display then exit
         if(err){
